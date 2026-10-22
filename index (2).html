@@ -1,0 +1,443 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Vndro Facilities Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6fa;--cd:#fff;--tx:#1b2433;--mu:#667085;--bd:#e3e8ef;--pr:#2457d6;--ok:#12805c;--wn:#b54708;--gr:#667085;--er:#c0262d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1420;--cd:#18202f;--tx:#e8ecf4;--mu:#9aa6bb;--bd:#2a3447;--pr:#7b9bff;--ok:#3ccf9a;--wn:#f5a65b;--gr:#9aa6bb;--er:#ff7b80}}
+*{box-sizing:border-box}html,body{height:auto}body{margin:0;background:var(--bg);color:var(--tx);font:15px Cairo,Tahoma,"Segoe UI",sans-serif}
+header{background:var(--cd);border-bottom:1px solid var(--bd);padding:10px 14px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--cd);z-index:6}
+h1{margin:0;font-size:18px}h1 small{color:var(--mu);font-weight:400;font-size:12px;margin-inline-start:8px}h3{margin:0 0 8px;font-size:15px}
+.bar1{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding:8px 14px 0}.tab{border:0;background:none;color:var(--mu);padding:8px 12px;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap;font:inherit}.tab.on{background:var(--cd);color:var(--pr);font-weight:700;box-shadow:0 -2px 0 var(--pr) inset}
+main{padding:14px;max-width:1100px;margin:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}.grid .card{margin:0}
+.big{font-size:32px;font-weight:700}small,.mu{color:var(--mu);font-size:13px}
+.bar{height:8px;background:var(--bd);border-radius:9px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%}
+.btn{border:1px solid var(--bd);background:var(--cd);color:var(--tx);padding:6px 12px;border-radius:8px;cursor:pointer;font:inherit}.btn:hover{border-color:var(--pr)}.btn.p{background:var(--pr);color:#fff;border-color:var(--pr)}.btn.d{color:var(--er)}.btn.s{padding:3px 8px;font-size:13px}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;max-width:100%}textarea{width:100%;min-height:200px;direction:ltr;font-family:monospace;font-size:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.row.sb{justify-content:space-between}
+.badge{border:1px solid;border-radius:20px;padding:1px 9px;font-size:12px;white-space:nowrap}
+.hr{display:flex;gap:10px;border-top:1px solid var(--bd);padding:8px 0}.hr>b{width:52px;color:var(--mu);flex:none}.hr>div{flex:1;min-width:0}
+.t{border:1px solid var(--bd);border-inline-start:4px solid var(--pr);border-radius:8px;padding:8px;margin-bottom:6px;background:var(--bg)}
+.ov{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;z-index:20;padding:12px}.md{background:var(--cd);border-radius:12px;padding:16px;width:min(520px,100%);max-height:90vh;overflow:auto}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f label{display:flex;flex-direction:column;font-size:13px;color:var(--mu);gap:2px}.f .w{grid-column:1/-1}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:start;white-space:nowrap}
+.low{color:var(--er);font-weight:700}.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));inset-inline:0;margin:auto;width:max-content;max-width:90%;background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;z-index:30}
+@media(max-width:560px){.f{grid-template-columns:1fr}}
+@media print{header,.tabs,.np,.toast{display:none!important}body{background:#fff;color:#000}.card{break-inside:avoid}}
+</style></head><body><div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const{useState,useEffect,useRef}=React;const h=htm.bind(React.createElement);
+const KEY='vndro-fm-v1',W=['رانيا','علي','ياسر'],ST=['لم تبدأ','جارٍ التنفيذ','مكتملة','تحتاج إلى متابعة'],SC={'لم تبدأ':'gr','جارٍ التنفيذ':'pr','مكتملة':'ok','تحتاج إلى متابعة':'wn'};
+const LOC=['البوفية','شقة 21','شقة 22','شقة 31','المخزن','شقة 1','الشقق الإدارية','خارج الشركة','الحمامات','الممرات','متعدد'];
+let DB=null;const hid=str=>{let a=0;for(const ch of str)a=(a*31+ch.charCodeAt(0))>>>0;return a.toString(36)};const uid=()=>Math.random().toString(36).slice(2,9);
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const addD=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const m=t=>{if(!t)return null;const[a,b]=t.split(':');return+a*60+ +b};
+const nowT=()=>{const d=new Date(),p=x=>String(x).padStart(2,'0');return p(d.getHours())+':'+p(d.getMinutes())};
+const L=(...a)=>a.map(t=>({id:hid(t),t}));
+const TPL=[
+['رانيا','تجهيز البوفية وفتح النوافذ عند ملاءمة الظروف','البوفية','08:00','08:30'],
+['رانيا','تنظيف المكاتب والترابيزات والكراسي والأسطح','شقة 21','08:30','09:30'],
+['رانيا','غسل الأكواب وتنظيف الحوض وأسطح البوفية','البوفية','09:30','10:00'],
+['رانيا','تجهيز ومتابعة الشاي والقهوة والمياه والسكر','البوفية','10:00','10:30'],
+['رانيا','تنظيف الأرضيات وجمع القمامة في المنطقة المسؤولة عنها','شقة 21','10:30','11:30'],
+['رانيا','مراجعة مستلزمات البوفية وتسجيل النواقص','البوفية','11:30','12:00'],
+['رانيا','تجهيز البوفية لوقت الفطار','البوفية','12:00','12:30'],
+['رانيا','ترتيب الأدوات والأسطح والتأكد من جاهزية المكان','البوفية','12:30','13:00'],
+['رانيا','متابعة البوفية وتغطية الاحتياجات العاجلة أثناء خروج ياسر','البوفية','13:00','14:00'],
+['رانيا','غسل الأكواب وتنظيف البوفية بعد الاستخدام','البوفية','14:00','15:00'],
+['رانيا','متابعة المشروبات ونظافة شقة 21','شقة 21','15:00','16:00'],
+['رانيا','جمع القمامة وتنظيف الأسطح','شقة 21','16:00','16:30'],
+['رانيا','مراجعة نهائية للبوفية وترتيب الأدوات','البوفية','16:30','17:00'],
+['علي','جولة صباحية على الحمامات وتسجيل حالة كل حمام','الحمامات','08:00','08:30'],
+['علي','تنظيف شقة 22 والمكاتب والأسطح','شقة 22','08:30','09:30'],
+['علي','تنظيف شقة 31 والممرات','شقة 31','09:30','10:30'],
+['علي','تنظيف وتطهير الحمامات المسندة إليه','الحمامات','10:30','11:00'],
+['علي','تنظيف شقة 1 والمنطقة المحددة له','شقة 1','11:00','12:00'],
+['علي','جمع القمامة وتغيير الأكياس','متعدد','12:00','12:30'],
+['علي','مراجعة الصابون والمناديل وورق الحمام','الحمامات','12:30','13:00'],
+['علي','متابعة المكاتب والممرات وتغطية الاحتياجات العاجلة','الممرات','13:00','14:00'],
+['علي','جولة ثانية على الحمامات وتسجيل النتائج','الحمامات','14:00','14:30'],
+['علي','استكمال نظافة الشقق الإدارية','الشقق الإدارية','14:30','15:30'],
+['علي','إعادة تزويد الحمامات بالمستلزمات','الحمامات','15:30','16:00'],
+['علي','جمع القمامة وتنظيف المناطق المشتركة','الممرات','16:00','16:30'],
+['علي','جولة نهائية وتسجيل الملاحظات','متعدد','16:30','17:00'],
+['ياسر','تفقد المخزن والتأكد من خلو الممرات','المخزن','08:00','08:30'],
+['ياسر','ترتيب الكراتين (المرة الأولى)','المخزن','08:30','09:00'],
+['ياسر','تنظيف أرضيات المخزن والمناطق المحددة','المخزن','09:00','10:00'],
+['ياسر','تنظيف الحمامات المسندة إليه','الحمامات','10:00','10:30'],
+['ياسر','جمع المخلفات وترتيب الأدوات','المخزن','10:30','11:00'],
+['ياسر','استكمال تنظيف المخزن ومراجعة ترتيب الكراتين','المخزن','11:00','12:00'],
+['ياسر','مراجعة احتياجات الفطار والتأكد من الجاهزية','المخزن','12:00','12:30'],
+['ياسر','الاستعداد للخروج وتسجيل وقت الخروج','المخزن','12:30','13:00'],
+['ياسر','إحضار فطار الموظفين (من 13:00 حتى وقت العودة الفعلي)','خارج الشركة','13:00','',{food:1}],
+['ياسر','تسجيل وقت العودة وتسليم الفطار','البوفية','','',{rel:1,ord:1,dur:15}],
+['ياسر','ترتيب الكراتين (المرة الثانية)','المخزن','','',{rel:1,ord:2,dur:30}],
+['ياسر','استكمال تنظيف المخزن والحمامات المسندة إليه','المخزن','','',{rel:1,ord:3,cap:990}],
+['ياسر','مراجعة المخزن والممرات وتسجيل المهام والملاحظات','المخزن','16:30','17:00']];
+const tplOf=s=>s.tpl||TPL.map(x=>({worker:x[0],title:x[1],loc:x[2],start:x[3],end:x[4],...(x[5]||{})}));
+const mkTasks=(d,tl,cur)=>tl.filter(x=>!cur.some(t=>t.date===d&&t.worker===x.worker&&t.title===x.title)).map(x=>({id:d+'-'+hid(x.worker+x.title),date:d,worker:x.worker,title:x.title,loc:x.loc,start:x.start,end:x.end,food:!!x.food,rel:!!x.rel,rec:!!x.rec,freq:x.freq||(x.rec?'once':'daily'),ord:x.ord||0,dur:x.dur||0,cap:x.cap||0,status:ST[0],note:'',done:'',as:''}));
+const mk=()=>({tasks:[],rounds:[],v:2,food:{},signs:{},avail:{},photos:[],rec:[],pins:{},admin:{name:'حماده (HR)'},short:[],checks:{},target:3,bath:[1,2,3,4,5,6].map(i=>({id:'b'+i,name:'حمام '+i,loc:'',who:''})),
+lists:{'رانيا':L('فتح النوافذ وتجهيز البوفية','نظافة المكاتب والأسطح في شقة 21','غسل الأكواب وتنظيف الحوض','توفر الشاي والقهوة والمياه والسكر','تنظيف الأرضيات وجمع القمامة','مراجعة مستلزمات البوفية وتسجيل النواقص','جاهزية البوفية للفطار','المراجعة النهائية للبوفية'),'علي':L('جولة صباحية على الحمامات وتسجيل حالتها','نظافة شقة 22','نظافة شقة 31 والممرات','تطهير الحمامات المسندة','نظافة شقة 1','تغيير أكياس القمامة','مراجعة الصابون والمناديل وورق الحمام','الجولة الثانية على الحمامات','إعادة تزويد الحمامات','الجولة النهائية وتسجيل الملاحظات'),'ياسر':L('تفقد المخزن وخلو الممرات','ترتيب الكراتين (المرة الأولى)','تنظيف أرضيات المخزن','تنظيف الحمامات المسندة','تسجيل وقت الخروج والعودة','تسليم الفطار','ترتيب الكراتين (المرة الثانية)','مراجعة المخزن والممرات قبل الانصراف')},
+sup:[['ورق حمام','لفة'],['صابون سائل','عبوة'],['معطر جو','عبوة'],['أكياس قمامة','لفة'],['مطهر','عبوة'],['مناديل','علبة']].map(x=>({id:uid(),name:x[0],unit:x[1],qty:10,min:3}))});
+const load=()=>{try{const j=JSON.parse(localStorage.getItem(KEY));if(j&&j.tasks){const o={...mk(),...j};if(o.v!==2){o.lists=mk().lists;o.v=2}return o}}catch(e){}return mk()};
+const pct=a=>a.length?Math.round(a.filter(t=>t.status==='مكتملة').length*100/a.length):0;
+const rc=(s,d,b)=>s.rounds.filter(r=>r.date===d&&r.bid===b);
+const bathPct=(s,d)=>{const g=s.target||1;return Math.round(s.bath.reduce((a,b)=>a+Math.min(g,rc(s,d,b.id).length),0)*100/(s.bath.length*g))};
+const rng=t=>{const a=m(t.start);return[a,Math.max(m(t.end)??a,a+1)]};
+function conflict(s,t){if(!t.start)return null;for(const o of s.tasks){if(o.id===t.id||o.date!==t.date||o.worker!==t.worker||!o.start)continue;const[a,b]=rng(o),[c,d]=rng(t);if(a<d&&c<b)return o}
+const f=s.food[t.date];if(t.worker==='ياسر'&&!t.food&&f&&f.out&&f.back){const a=m(f.out),b=m(f.back),[c,d]=rng(t);if(c<b&&a<d)return{title:'خروج الفطار الفعلي',start:f.out,end:f.back}}return null}
+const tl=t=>t.start?t.start+(t.end?' – '+t.end:''):(t.rel?'بعد العودة':'عند التفرغ');
+const ol=t=>t.orig?' · ↪ من '+t.orig+(t.ostart?' (كان '+t.ostart+(t.oend?'–'+t.oend:'')+')':''):'';
+function plan(all,av,food){const arr=all.map(t=>({...t})),chg=new Set(),S={tasks:arr,food};
+ const una=(w,t)=>{const a=av[t.date+'|'+w];if(!a||!a.type||a.type==='ok')return false;if(a.type==='leave')return true;if(!t.start)return false;const ra=m(a.from)??480,rb=m(a.to)??1020,r=rng(t);return r[0]<rb&&ra<r[1]};
+ const ld=w=>arr.filter(t=>t.worker===w).reduce((x,t)=>x+(t.start?rng(t)[1]-rng(t)[0]:30),0);
+ arr.forEach(t=>{if(t.orig&&t.status!=='مكتملة'){const ot={...t,start:t.ostart||t.start,end:t.ostart?(t.oend||''):t.end};if(!una(t.orig,ot)){t.worker=t.orig;t.start=ot.start;t.end=ot.end;t.orig='';t.ostart='';t.oend='';chg.add(t.id)}}});
+ arr.forEach(t=>{if((t.note||'').startsWith('تعذر التحويل')&&!una(t.worker,t)){t.note='';t.status='لم تبدأ';chg.add(t.id)}});
+ arr.filter(t=>t.status!=='مكتملة'&&una(t.worker,t)).sort((a,b)=>(a.start||'99').localeCompare(b.start||'99')).forEach(t=>{
+ const U=t.worker,a=av[t.date+'|'+U]||{},cands=W.filter(w=>w!==U&&!una(w,t)).sort((x,y)=>ld(x)-ld(y));
+ if(!cands.length){if(t.status!=='تحتاج إلى متابعة'||!(t.note||'').startsWith('تعذر التحويل')){t.status='تحتاج إلى متابعة';t.note='تعذر التحويل: لا يوجد عامل متاح — يحتاج قرارك';chg.add(t.id)}return}
+ const free=w=>!conflict(S,{...t,worker:w}),pref=a.target&&cands.includes(a.target)?a.target:null,pick=pref||cands.find(free)||cands[0];
+ const timed=!t.start||free(pick);t.orig=t.orig||U;t.worker=pick;
+ if(!timed){t.ostart=t.ostart||t.start;t.oend=t.oend||t.end;t.start='';t.end=''}
+ chg.add(t.id)});
+ return arr.filter(t=>chg.has(t.id))}
+const DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const recMatch=(r,d)=>{if(r.on===false)return false;const x=new Date(d+'T12:00:00');return r.freq==='daily'||(r.freq==='weekly'&&+r.dow===x.getDay())||(r.freq==='monthly'&&+r.dom===x.getDate())};
+const recFor=(rec,d)=>rec.filter(r=>recMatch(r,d)).map(r=>({worker:r.worker,title:r.title,loc:r.loc,start:r.start||'',end:r.end||'',rec:1,freq:r.freq}));
+const frT=r=>r.freq==='daily'?'يوميًا':r.freq==='weekly'?'كل '+DAYS[r.dow]:'يوم '+r.dom+' من كل شهر';
+const SUG=[
+{title:'كنس ومسح أرضيات المكاتب',loc:'شقة 21',freq:'daily',worker:'رانيا'},
+{title:'كنس الممرات والسلالم والمناطق المشتركة',loc:'الممرات',freq:'daily',worker:'علي'},
+{title:'كنس ومسح أرضية المخزن',loc:'المخزن',freq:'daily',worker:'ياسر'},
+{title:'تنظيف زجاج الشبابيك والواجهات',loc:'الشقق الإدارية',freq:'weekly',dow:4,worker:'علي'},
+{title:'تنظيف زجاج المكاتب والقواطع الزجاجية',loc:'شقة 21',freq:'weekly',dow:4,worker:'رانيا'},
+{title:'تنظيف الواجهة الخارجية للتكييفات والفلاتر القابلة للفك',loc:'الشقق الإدارية',freq:'monthly',dom:1,worker:'علي'},
+{title:'إزالة الغبار من فتحات التكييف والمراوح والأسقف',loc:'متعدد',freq:'monthly',dom:1,worker:'ياسر'},
+{title:'تنظيف الثلاجة والميكروويف وأدوات البوفية',loc:'البوفية',freq:'weekly',dow:4,worker:'رانيا'},
+{title:'مسح الأبواب والمقابض ومفاتيح الإضاءة',loc:'متعدد',freq:'weekly',dow:2,worker:'علي'},
+{title:'ترتيب ونظافة أرفف المخزن',loc:'المخزن',freq:'weekly',dow:3,worker:'ياسر'}];
+const hashPin=async(p,salt)=>{try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+p));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let a=5381;for(const ch of salt+':'+p)a=((a*33)^ch.charCodeAt(0))>>>0;return'f'+a.toString(36)}};
+const ls=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+function AdminGate({c,onOk}){const[open,setOpen]=useState(false),[pin,setPin]=useState(''),[er,setEr]=useState('');
+ const go=async()=>{const a=c.s.admin||{};if(!a.h)return setEr(c.rdy?'لم يُعيَّن رقم سري للمشرف بعد (يعيّنه صاحب الحساب من تبويب البيانات)':'جارٍ التحميل… حاول بعد لحظات');
+ const at=ls('vndro-att')||{},x=at.__admin||{n:0,t:0};if(x.t>Date.now())return setEr('محاولات كثيرة. حاول بعد '+Math.ceil((x.t-Date.now())/60000)+' دقيقة');
+ if(await hashPin(pin.trim(),a.salt)===a.h){at.__admin={n:0,t:0};ls('vndro-att',at);onOk()}else{x.n++;if(x.n>=5){x.t=Date.now()+300000;x.n=0}at.__admin=x;ls('vndro-att',at);setEr(x.t>Date.now()?'تم إيقاف المحاولات 5 دقائق':'الرقم السري غير صحيح')}};
+ return h`<div style=${{marginTop:20,textAlign:'center'}}>${!open?h`<button class="btn s" onClick=${()=>setOpen(true)}>🔐 دخول المشرف (HR)</button>`:h`<div class="card"><h3>دخول المشرف</h3><div class="row"><input type="password" inputMode="numeric" autoComplete="off" placeholder="الرقم السري للمشرف" value=${pin} onInput=${e=>setPin(e.target.value)} onKeyDown=${e=>e.key==='Enter'&&go()}/><button class="btn p" onClick=${go}>دخول</button><button class="btn" onClick=${()=>setOpen(false)}>إلغاء</button></div>${er&&h`<small style=${{color:'var(--er)'}}>${er}</small>`}</div>`}</div>`}
+function PinAdmin({c}){const[v,setV]=useState({}),[an,setAn]=useState((c.s.admin||{}).name||''),[ap,setAp]=useState('');
+ const saveAdmin=async()=>{const nm=an.trim();if(!nm)return c.say('اكتب اسم المشرف');let a={...(c.s.admin||{}),name:nm};if(ap.trim()){if(!/^\d{6,8}$/.test(ap.trim()))return c.say('رقم المشرف من 6 إلى 8 أرقام');const salt=uid()+uid();a={...a,salt,h:await hashPin(ap.trim(),salt)}}c.setAdmin(a);setAp('');c.say('تم حفظ حساب المشرف')};
+ const save=async w=>{const p=(v[w]||'').trim();if(!/^\d{4,8}$/.test(p))return c.say('الرقم السري من 4 إلى 8 أرقام');const salt=uid()+uid(),hh=await hashPin(p,salt);c.setPins({...c.s.pins,[w]:{h:hh,salt}});setV({...v,[w]:''});c.say('تم حفظ الرقم السري لـ '+w)};
+ return h`<div class="card"><h3>الأرقام السرية للموظفين</h3><div style=${{borderBottom:'1px solid var(--bd)',paddingBottom:10,marginBottom:6}}><b>👤 المشرف (HR): ${(c.s.admin||{}).name||'—'}</b> <small>${(c.s.admin||{}).h?'✔ الرقم السري محدد':'⚠ الرقم السري غير محدد'}</small>
+ <div class="row" style=${{marginTop:6}}><input placeholder="اسم المشرف" value=${an} onInput=${e=>setAn(e.target.value)}/><input type="password" inputMode="numeric" autoComplete="off" placeholder="رقم المشرف (6-8 أرقام)" value=${ap} onInput=${e=>setAp(e.target.value)}/><button class="btn s p" onClick=${saveAdmin}>حفظ حساب المشرف</button></div>
+ <small class="mu">يدخل بهذا الرقم من زر «دخول المشرف» في شاشة الموظفين فيحصل على كل صلاحيات الإدارة، وتُسجَّل الاعتمادات باسمه.</small></div>
+ <p class="mu">يدخل الموظف شاشته بالرقم السري الذي تحدده هنا فيرى مهامه فقط. الأرقام لا تُعرض بعد الحفظ، ولا يمكنك إلا تغييرها أو حذفها.</p>
+ ${W.map(w=>h`<div class="row sb" key=${w} style=${{borderTop:'1px solid var(--bd)',padding:'6px 0'}}><span>${w}: ${c.s.pins[w]?'✔ محدد':'⚠ غير محدد'}<br/><small dir="ltr" style=${{userSelect:'all'}}>${LINK}#${TK[w]}</small> <button class="btn s np" onClick=${()=>{try{navigator.clipboard.writeText(LINK+'#'+TK[w]);c.say('تم نسخ رابط '+w)}catch(e){c.say('انسخ الرابط يدويًا')}}}>نسخ الرابط</button></span><span class="row"><input type="password" inputMode="numeric" autoComplete="off" placeholder="رقم جديد (4-8 أرقام)" style=${{width:150}} value=${v[w]||''} onInput=${e=>setV({...v,[w]:e.target.value})}/>
+ <button class="btn s p" onClick=${()=>save(w)}>${c.s.pins[w]?'تغيير':'تعيين'}</button>${c.s.pins[w]&&h`<button class="btn s d" onClick=${()=>c.ask('حذف الرقم السري لـ '+w+'؟ لن يستطيع الدخول حتى تعيّن رقمًا جديدًا.',()=>{const n={...c.s.pins};delete n[w];c.setPins(n)})}>حذف</button>`}</span></div>`)}</div>`}
+const LINK='https://claude.ai/artifact/EEvwGEbgCv41PSLv7GMX54',TK={'رانيا':'rania','علي':'ali','ياسر':'yasser'};
+const HT=()=>{try{const k=(location.hash||'').slice(1).toLowerCase();return Object.keys(TK).find(w=>TK[w]===k)||''}catch(e){return''}};
+const wkDays=d=>{const x=new Date(d+'T12:00:00'),st=addD(d,-((x.getDay()+1)%7));return[...Array(7)].map((_,i)=>addD(st,i))};
+const monthDays=d=>{const[y,mo]=d.split('-').map(Number),n=new Date(y,mo,0).getDate();return[...Array(n)].map((_,i)=>y+'-'+String(mo).padStart(2,'0')+'-'+String(i+1).padStart(2,'0'))};
+function Period({c,me,vw}){const{s}=c,td=today(),days=vw==='w'?wkDays(c.date):monthDays(c.date),pf=vw==='w'?'weekly':'monthly',fq=t=>t.freq||(t.rec?'once':'daily');
+ const items=d=>{const real=s.tasks.filter(t=>t.date===d&&t.worker===me&&(fq(t)===pf||fq(t)==='once')).sort((a,b)=>(a.start||'99').localeCompare(b.start||'99'));
+ const up=d>td?recFor((s.rec||[]).filter(r=>r.worker===me&&r.freq===pf),d).filter(x=>!real.some(t=>t.title===x.title)).map(x=>({...x,id:'f-'+d+x.title,date:d,status:'قادمة',fut:1})):[];return[...real,...up]};
+ const all=s.tasks.filter(t=>t.worker===me&&t.date>=days[0]&&t.date<=days[days.length-1]&&t.date<=td),dn=all.filter(t=>t.status==='مكتملة').length,p=all.length?Math.round(dn*100/all.length):0;
+ const rows=days.map(d=>({d,l:items(d)})).filter(x=>x.l.length);
+ return h`<div class="card"><h3>${vw==='w'?'مهام الأسبوع ('+days[0]+' ← '+days[6]+')':'مهام الشهر ('+c.date.slice(0,7)+')'}</h3><p>إنجاز كل مهامك حتى اليوم في هذه الفترة: <b>${p}%</b> (${dn}/${all.length})</p><${Bar} v=${p} c="ok"/></div>
+ ${rows.length?rows.map(r=>h`<div class="card" key=${r.d}><h3>${DAYS[new Date(r.d+'T12:00:00').getDay()]} · ${r.d}${r.d===td?' (اليوم)':''}</h3>
+ ${r.l.map(t=>h`<div class="t" key=${t.id} style=${{borderInlineStartColor:'var(--'+(SC[t.status]||'gr')+')'}}><div class="row sb"><b>${t.title}</b>${t.fut?h`<span class="badge mu">قادمة</span>`:h`<${Badge} s=${t.status}/>`}</div>
+ <div class="mu">${t.loc} · ${tl(t)} · ${t.freq==='weekly'?'أسبوعية':t.freq==='monthly'?'شهرية':'مرة واحدة'}${t.note?' · '+t.note:''}</div>
+ ${!t.fut&&t.date<=td&&(t.status==='مكتملة'?h`<div class="row" style=${{marginTop:6}}><b style=${{color:'var(--ok)'}}>✔ تم ${t.done||''}</b><button class="btn s" onClick=${()=>c.setStatus(t,'لم تبدأ')}>تراجع</button></div>`
+ :h`<div class="row" style=${{marginTop:8}}><button class="btn p" onClick=${()=>c.setStatus(t,'مكتملة')}>تم ✔</button><button class="btn" onClick=${()=>c.setStatus(t,'جارٍ التنفيذ')}>بدأت</button><button class="btn" onClick=${()=>c.setStatus(t,'تحتاج إلى متابعة')}>تحتاج متابعة</button></div>`)}
+ ${!t.fut&&h`<${Thumbs} c=${c} t=${t}/>`}${!t.fut&&t.date<=td&&h`<div style=${{marginTop:6}}><${PhotoBtn} c=${c} t=${t} by=${me}/></div>`}</div>`)}</div>`)
+ :h`<div class="card"><small>لا مهام ${vw==='w'?'أسبوعية':'شهرية'} في هذه الفترة. يضيفها المشرف من تبويب «المهام الدورية».</small></div>`}`}
+const csv=a=>{const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';return['التاريخ','العامل','المهمة','الموقع','من','إلى','الحالة','فعلي من','فعلي إلى','محوّلة من','ملاحظات'].map(q).join(',')+'\r\n'+[...a].sort((x,y)=>x.date.localeCompare(y.date)||(x.start||'').localeCompare(y.start||'')).map(t=>[t.date,t.worker,t.title,t.loc,t.start,t.end,t.status,t.as,t.done,t.orig,[t.note,t.wn].filter(Boolean).join(' | ')].map(q).join(',')).join('\r\n')};
+const dl=(n,x,ty)=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+x],{type:ty}));a.download=n;document.body.appendChild(a);a.click();a.remove()}catch(e){}};
+const Bar=({v,c='pr'})=>h`<div class="bar"><i style=${{width:v+'%',background:'var(--'+c+')'}}></i></div>`;
+const Badge=({s})=>h`<span class="badge" style=${{color:'var(--'+SC[s]+')',borderColor:'var(--'+SC[s]+')'}}>${s}</span>`;
+const Modal=({children,close})=>h`<div class="ov" onClick=${close}><div class="md" onClick=${e=>e.stopPropagation()}>${children}</div></div>`;
+
+function TaskRow({t,c}){const{ask,setModal}=c;
+ return h`<div class="t" style=${{borderInlineStartColor:'var(--'+SC[t.status]+')'}}><div class="row sb"><b>${t.title}</b><${Badge} s=${t.status}/></div>
+ <div class="mu">${t.worker} · ${t.loc||'—'} · ${tl(t)}${t.as||t.done?' · فعلي: '+(t.as||'—')+' ← '+(t.done||'—'):''}${t.note?' · '+t.note:''}${t.wn?' · 📝 '+t.wn:''}${ol(t)}</div>
+ <div class="row np" style=${{marginTop:6}}><select value=${t.status} onChange=${e=>c.setStatus(t,e.target.value)}>${ST.map(o=>h`<option>${o}</option>`)}</select>
+ <button class="btn s" onClick=${()=>setModal({k:'task',t})}>تعديل</button>
+ <button class="btn s d" onClick=${()=>ask('حذف المهمة «'+t.title+'»؟',()=>c.delTask(t.id))}>حذف</button></div><${Thumbs} c=${c} t=${t}/></div>`}
+function TaskForm({c,t}){const[f,setF]=useState(t);const[e,setE]=useState('');const set=(k,v)=>setF({...f,[k]:v});
+ return h`<h3>${t.id?'تعديل مهمة':'إضافة مهمة'}</h3><div class="f">
+ <label class="w">العنوان<input value=${f.title} onInput=${x=>set('title',x.target.value)}/></label>
+ <label>العامل<select value=${f.worker} onChange=${x=>set('worker',x.target.value)}>${W.map(o=>h`<option>${o}</option>`)}</select></label>
+ <label>الموقع<select value=${f.loc} onChange=${x=>set('loc',x.target.value)}>${LOC.map(o=>h`<option>${o}</option>`)}</select></label>
+ <label>من<input type="time" value=${f.start} onInput=${x=>set('start',x.target.value)}/></label>
+ <label>إلى (اختياري)<input type="time" value=${f.end} onInput=${x=>set('end',x.target.value)}/></label>
+ <label>الحالة<select value=${f.status} onChange=${x=>set('status',x.target.value)}>${ST.map(o=>h`<option>${o}</option>`)}</select></label>
+ <label>التاريخ<input type="date" value=${f.date} onInput=${x=>set('date',x.target.value)}/></label><label>فعلي من<input type="time" value=${f.as||''} onInput=${x=>set('as',x.target.value)}/></label><label>فعلي إلى<input type="time" value=${f.done||''} onInput=${x=>set('done',x.target.value)}/></label>
+ <label class="w">ملاحظات<input value=${f.note} onInput=${x=>set('note',x.target.value)}/></label>${!t.id&&h`<label class="w" style=${{flexDirection:'row',alignItems:'center'}}><input type="checkbox" checked=${!!f.rep} onChange=${x=>set('rep',x.target.checked)}/> مهمة يومية متكررة (تُنشأ تلقائيًا كل يوم)</label>`}</div>
+ ${e&&h`<p style=${{color:'var(--er)'}}>${e}</p>`}
+ <div class="row" style=${{marginTop:10}}><button class="btn p" onClick=${()=>{const{rep,...g}=f;const r=c.saveTask({...g,id:f.id||uid()});if(r)setE(r);else{if(rep&&!f.id)c.addTpl(f);c.setModal(null);c.say('تم الحفظ')}}}>حفظ</button><button class="btn" onClick=${()=>c.setModal(null)}>إلغاء</button></div>`}
+
+function Dash({c}){const{s,date}=c;const dt=s.tasks.filter(t=>t.date===date),low=s.sup.filter(x=>x.qty<=x.min),f=s.food[date]||{};
+ const fu=dt.filter(t=>t.status==='تحتاج إلى متابعة'),nob=s.bath.filter(b=>!rc(s,date,b.id).length);
+ return h`<div class="grid">
+ <div class="card"><h3>إنجاز المهام اليوم</h3><div class="big">${pct(dt)}%</div><${Bar} v=${pct(dt)} c="ok"/><small>${dt.filter(t=>t.status==='مكتملة').length} من ${dt.length} مهمة</small></div>
+ ${W.map(w=>{const a=dt.filter(t=>t.worker===w);return h`<div class="card" key=${w}><h3>${w}</h3><div class="big">${pct(a)}%</div><${Bar} v=${pct(a)}/><small>${a.length?a.filter(t=>t.status==='مكتملة').length+' من '+a.length:'لا مهام لهذا اليوم'}</small></div>`})}
+ <div class="card"><h3>جولات الحمامات</h3><div class="big">${bathPct(s,date)}%</div><${Bar} v=${bathPct(s,date)} c="wn"/><small>الهدف ${s.target} جولات لكل حمام · بلا جولات: ${nob.length}</small></div>
+ <div class="card"><h3>الفطار (ياسر)</h3><div>خروج: <b>${f.out||'—'}</b> · عودة: <b>${f.back||'—'}</b></div><small>${f.out&&!f.back?'ياسر خارج الآن':f.out&&f.back?'المدة '+(m(f.back)-m(f.out))+' دقيقة':'لم يُسجَّل بعد'}</small></div>
+ <div class="card"><h3>نقص المستلزمات</h3>${low.length?low.map(x=>h`<div class="low" key=${x.id}>⚠ ${x.name}: ${x.qty} (الحد ${x.min})</div>`):h`<small>لا نقص بالمخزون</small>`}${s.short.filter(x=>!x.done).map(x=>h`<div class="low" key=${x.id}>⚠ ${x.item} <small>(${x.by})</small></div>`)}</div>
+ ${W.some(w=>((s.avail[date+'|'+w]||{}).type||'ok')!=='ok')&&h`<div class="card"><h3>غير متاحين اليوم</h3>${W.filter(w=>((s.avail[date+'|'+w]||{}).type||'ok')!=='ok').map(w=>{const a=s.avail[date+'|'+w];return h`<div key=${w}>${w}: ${a.type==='leave'?'إجازة':'أعمال إدارية'+(a.from?' ('+a.from+'–'+(a.to||'17:00')+')':'')} · حُوِّلت ${s.tasks.filter(t=>t.date===date&&t.orig===w).length} مهمة</div>`})}</div>`}
+ <div class="card"><h3>الصور</h3><div class="big">${s.photos.filter(p=>p.date===date&&!p.rv).length}</div><small>بانتظار المراجعة اليوم · الإجمالي ${s.photos.filter(p=>p.date===date).length}</small><div style=${{marginTop:6}}><button class="btn s np" onClick=${()=>c.setTab('photos')}>مراجعة الصور</button></div></div>
+ <div class="card"><h3>تم مؤخرًا</h3>${dt.filter(t=>t.status==='مكتملة'&&t.done).sort((a,b)=>b.done.localeCompare(a.done)).slice(0,8).map(t=>h`<div key=${t.id}>✔ ${t.worker}: ${t.title} <small>${t.done}</small></div>`)}${!dt.some(t=>t.status==='مكتملة'&&t.done)&&h`<small>لا شيء بعد</small>`}</div>
+ <div class="card"><h3>تحتاج إلى متابعة</h3>${fu.length?fu.map(t=>h`<div key=${t.id}>${t.worker}: ${t.title}</div>`):h`<small>لا شيء</small>`}</div></div>
+ ${!dt.length&&h`<div class="card"><p>لا مهام في هذا التاريخ.</p><button class="btn p" onClick=${c.gen}>إنشاء مهام اليوم من القوالب</button></div>`}`}
+
+function Tasks({c}){const{s,date,setModal}=c;const[q,setQ]=useState(''),[fw,setFw]=useState(''),[fs,setFs]=useState(''),[vw,setVw]=useState('t');
+ const l=s.tasks.filter(t=>t.date===date&&(!fw||t.worker===fw)&&(!fs||t.status===fs)&&(!q||(t.title+t.loc+t.note+t.worker+(t.wn||'')).includes(q))).sort((a,b)=>(a.start||'99').localeCompare(b.start||'99')||a.worker.localeCompare(b.worker));
+ const nw={date,worker:W[0],title:'',loc:LOC[0],start:'08:00',end:'',status:ST[0],note:'',done:''};
+ const row=t=>h`<${TaskRow} key=${t.id} t=${t} c=${c}/>`;
+ return h`<div class="card np"><div class="row"><input placeholder="بحث…" value=${q} onInput=${e=>setQ(e.target.value)}/>
+ <select value=${fw} onChange=${e=>setFw(e.target.value)}><option value="">كل العمال</option>${W.map(o=>h`<option>${o}</option>`)}</select>
+ <select value=${fs} onChange=${e=>setFs(e.target.value)}><option value="">كل الحالات</option>${ST.map(o=>h`<option>${o}</option>`)}</select>
+ <button class="btn p" onClick=${()=>setModal({k:'task',t:nw})}>+ مهمة</button><button class="btn" onClick=${c.gen}>إنشاء من القوالب</button><button class="btn" onClick=${c.regen}>إعادة بناء اليوم</button>
+ <button class="btn" onClick=${()=>setVw(vw==='t'?'h':'t')}>${vw==='t'?'عرض بالساعة':'عرض جدول'}</button><button class="btn" onClick=${()=>{try{window.print()}catch(e){}}}>🖨 طباعة</button></div></div>
+ ${vw==='t'?h`<div class="card tw"><h3>جدول المهام — ${date}</h3><table><tr><th>الوقت</th><th>العامل</th><th>المهمة</th><th>الموقع</th><th>الحالة</th><th>الفعلي</th><th>ملاحظات</th><th>صور</th><th class="np"></th></tr>
+ ${l.map(t=>h`<tr key=${t.id}><td>${tl(t)}</td><td>${t.worker}</td><td style=${{whiteSpace:'normal',minWidth:200}}>${t.title}</td><td>${t.loc}</td>
+ <td><${Badge} s=${t.status}/> <select class="np" value=${t.status} onChange=${e=>c.setStatus(t,e.target.value)}>${ST.map(o=>h`<option>${o}</option>`)}</select></td><td>${t.as||t.done?(t.as||'—')+'←'+(t.done||'—'):''}</td>
+ <td style=${{whiteSpace:'normal'}}>${[t.note,t.wn,ol(t).replace(' · ','')].filter(Boolean).join(' · ')}</td><td>${s.photos.filter(p=>p.taskId===t.id).length||''}</td><td class="np"><button class="btn s" onClick=${()=>setModal({k:'task',t})}>تعديل</button> <button class="btn s d" onClick=${()=>c.ask('حذف المهمة «'+t.title+'»؟',()=>c.delTask(t.id))}>حذف</button></td></tr>`)}</table>${!l.length&&h`<small>لا مهام. اضغط «إنشاء من القوالب».</small>`}</div>`
+ :h`<div class="card">${[...Array(10)].map((_,i)=>8+i).map(hr=>h`<div class="hr" key=${hr}><b>${String(hr).padStart(2,'0')}:00</b><div>${l.filter(t=>t.start&&Math.floor(m(t.start)/60)===hr).map(row)}</div></div>`)}
+ ${l.some(t=>!t.start)&&h`<div class="hr"><b>بلا وقت</b><div>${l.filter(t=>!t.start).map(row)}</div></div>`}</div>`}`}
+function Chk({c,wk}){const{s,date,ask}=c;const[n,setN]=useState({});const ck=id=>s.checks[date+'|'+id];const ws=wk?[wk]:W;
+ return h`${!wk&&h`<div class="row np" style=${{marginBottom:10}}><button class="btn" onClick=${()=>{try{window.print()}catch(e){}}}>🖨 طباعة قوائم الفحص</button></div>`}
+ <div class="grid">${ws.map(w=>{const a=s.lists[w]||[],d=a.filter(i=>ck(i.id)).length,p=a.length?Math.round(d*100/a.length):0;
+ return h`<div class="card" key=${w}><div class="row sb"><h3>قائمة فحص ${w} — ${date}</h3><b>${p}%</b></div><${Bar} v=${p} c="ok"/>
+ ${a.map(i=>h`<div class="row sb" key=${i.id}><label class="row"><input type="checkbox" checked=${!!ck(i.id)} onChange=${e=>c.setCheck(date,w,i.id,e.target.checked)}/>${i.t}</label>
+ ${!wk&&h`<button class="btn s d np" onClick=${()=>ask('حذف البند «'+i.t+'»؟',()=>c.setLists({...s.lists,[w]:a.filter(x=>x.id!==i.id)}))}>✕</button>`}</div>`)}
+ ${!wk&&h`<div class="row np" style=${{marginTop:8}}><input placeholder="بند جديد" value=${n[w]||''} onInput=${e=>setN({...n,[w]:e.target.value})}/><button class="btn s" onClick=${()=>{if(!(n[w]||'').trim())return;c.setLists({...s.lists,[w]:[...a,{id:uid(),t:n[w].trim()}]});setN({...n,[w]:''})}}>إضافة</button></div>`}</div>`})}</div>`}
+const CK=[['fl','الأرضيات'],['si','الحوض'],['to','المرحاض'],['sm','الرائحة'],['so','الصابون'],['ti','المناديل'],['tp','ورق الحمام']];
+function RoundForm({c,b}){const[f,setF]=useState({time:nowT(),by:b.who||'',note:'',checks:Object.fromEntries(CK.map(x=>[x[0],true]))});const[e,setE]=useState('');
+ return h`<h3>تسجيل جولة — ${b.name}${b.loc?' ('+b.loc+')':''}</h3><p class="mu">علّم ما هو سليم، وألغِ التعليم عن أي مشكلة.</p><div class="f">
+ <label>العامل<select value=${f.by} onChange=${x=>setF({...f,by:x.target.value})}><option value="">اختر</option>${W.map(o=>h`<option>${o}</option>`)}</select></label>
+ <label>الوقت<input type="time" value=${f.time} onInput=${x=>setF({...f,time:x.target.value})}/></label>
+ ${CK.map(x=>h`<label key=${x[0]} style=${{flexDirection:'row',alignItems:'center'}}><input type="checkbox" checked=${f.checks[x[0]]} onChange=${v=>setF({...f,checks:{...f.checks,[x[0]]:v.target.checked}})}/> ${x[1]}: ${f.checks[x[0]]?'سليم':'مشكلة'}</label>`)}
+ <label class="w">ملاحظات<input value=${f.note} onInput=${x=>setF({...f,note:x.target.value})}/></label></div>
+ ${e&&h`<p style=${{color:'var(--er)'}}>${e}</p>`}
+ <div class="row" style=${{marginTop:10}}><button class="btn p" onClick=${()=>{if(!f.by)return setE('اختر اسم العامل');if(!f.time)return setE('أدخل الوقت');c.putRound({id:uid(),date:c.date,bid:b.id,time:f.time,by:f.by,checks:f.checks,ok:CK.every(x=>f.checks[x[0]]),note:f.note});c.setModal(null);c.say('تم تسجيل الجولة')}}>حفظ</button><button class="btn" onClick=${()=>c.setModal(null)}>إلغاء</button></div>`}
+function Bath({c}){const{s,up,date,ask,setModal}=c;const setB=(id,k,v)=>up(p=>({...p,bath:p.bath.map(b=>b.id===id?{...b,[k]:v}:b)}));
+ return h`<div class="card np row">عدد الجولات المستهدف لكل حمام يوميًا: <input type="number" min="1" style=${{width:70}} value=${s.target} onInput=${e=>up(p=>({...p,target:Math.max(1,+e.target.value||1)}))}/><small>موقع كل حمام والمسؤول عنه غير مفترضين: حدّدهما أنت.</small></div>
+ <div class="grid">${s.bath.map(b=>{const r=rc(s,date,b.id).sort((x,y)=>x.time.localeCompare(y.time));const p=Math.min(100,Math.round(r.length*100/s.target));
+ return h`<div class="card" key=${b.id}><div class="row"><input style=${{width:110}} value=${b.name} onInput=${e=>setB(b.id,'name',e.target.value)}/><select value=${b.loc} onChange=${e=>setB(b.id,'loc',e.target.value)}><option value="">الموقع؟</option>${LOC.map(o=>h`<option>${o}</option>`)}</select>
+ <select value=${b.who} onChange=${e=>setB(b.id,'who',e.target.value)}><option value="">غير مُسند</option>${W.map(o=>h`<option>${o}</option>`)}</select></div>
+ <${Bar} v=${p}/><small>${r.length} من ${s.target} جولات</small>
+ ${r.map(x=>{const bad=CK.filter(k=>x.checks&&!x.checks[k[0]]).map(k=>k[1]);return h`<div key=${x.id} style=${{borderTop:'1px solid var(--bd)',padding:'6px 0'}}><div class="row sb"><span>${x.time} · ${x.by||'—'}</span><span class="row"><b style=${{color:'var(--'+(x.ok?'ok':'wn')+')'}}>${x.ok?'✔ سليم':'⚠ '+(bad.join('، ')||'يحتاج متابعة')}</b><button class="btn s d np" onClick=${()=>ask('حذف الجولة؟',()=>c.delRound(x.id))}>✕</button></span></div>${x.note&&h`<small>${x.note}</small>`}</div>`})}
+ <div class="np" style=${{marginTop:8}}><button class="btn p s" onClick=${()=>setModal({k:'round',b})}>+ تسجيل جولة</button></div></div>`})}</div>`}
+function Fac({c}){const{s,up,date,say}=c;const f=s.food[date]||{};const sf=(k,v)=>{const n={...f,[k]:v};if(n.out&&n.back&&m(n.back)<m(n.out))return say('وقت العودة قبل وقت الخروج');c.setFood(date,n)};
+ const ys=s.tasks.filter(t=>t.date===date&&t.worker==='ياسر'&&!t.food&&f.out&&f.back&&rng(t)[0]<m(f.back)&&m(f.out)<rng(t)[1]);
+ const l=s.tasks.filter(t=>t.date===date&&['البوفية','المخزن'].includes(t.loc)).sort((a,b)=>a.start.localeCompare(b.start));
+ return h`<div class="card"><h3>إحضار الفطار (ياسر) — الوقت المخطط ١٣:٠٠</h3><p class="mu">وقت الخروج والعودة الفعلي يُسجَّل يدويًا ولا يُفترض له وقت.</p>
+ <div class="row"><label>الخروج <input type="time" value=${f.out||''} onInput=${e=>sf('out',e.target.value)}/></label><button class="btn s" onClick=${()=>sf('out',nowT())}>خروج الآن</button>
+ <label>العودة <input type="time" value=${f.back||''} onInput=${e=>sf('back',e.target.value)}/></label><button class="btn s" onClick=${()=>sf('back',nowT())}>عودة الآن</button></div>
+ <div class="row" style=${{marginTop:8}}><input style=${{flex:1}} placeholder="ملاحظات" value=${f.note||''} onInput=${e=>sf('note',e.target.value)}/></div>
+ <p>${f.out&&f.back?'المدة الفعلية: '+(m(f.back)-m(f.out))+' دقيقة':f.out?'ياسر خارج حاليًا':'لم يُسجَّل'}</p>
+ ${ys.length>0&&h`<p style=${{color:'var(--er)'}}>⚠ مهام تتعارض مع فترة الخروج: ${ys.map(t=>t.title).join('، ')}</p>`}</div>
+ <div class="card"><h3>مهام البوفية والمخزن</h3>${l.length?l.map(t=>h`<${TaskRow} key=${t.id} t=${t} c=${c}/>`):h`<small>لا مهام. أنشئها من تبويب المهام.</small>`}</div>`}
+
+function Sup({c}){const{s,up,ask}=c;const[q,setQ]=useState(''),[n,setN]=useState({name:'',unit:'',qty:'',min:''});const set=(id,k,v)=>up(p=>({...p,sup:p.sup.map(x=>x.id===id?{...x,[k]:v}:x)}));const nm=v=>Math.max(0,+v||0);
+ return h`<div class="card np"><div class="row"><input placeholder="بحث…" value=${q} onInput=${e=>setQ(e.target.value)}/></div><div class="row" style=${{marginTop:8}}>
+ <input placeholder="اسم الصنف" value=${n.name} onInput=${e=>setN({...n,name:e.target.value})}/><input style=${{width:70}} placeholder="الوحدة" value=${n.unit} onInput=${e=>setN({...n,unit:e.target.value})}/>
+ <input style=${{width:70}} type="number" placeholder="الكمية" value=${n.qty} onInput=${e=>setN({...n,qty:e.target.value})}/><input style=${{width:90}} type="number" placeholder="حد التنبيه" value=${n.min} onInput=${e=>setN({...n,min:e.target.value})}/>
+ <button class="btn p" onClick=${()=>{if(!n.name.trim())return;up(p=>({...p,sup:[...p.sup,{id:uid(),name:n.name.trim(),unit:n.unit,qty:nm(n.qty),min:nm(n.min)}]}));setN({name:'',unit:'',qty:'',min:''})}}>+ إضافة</button></div></div>
+ <div class="card tw"><table><tr><th>الصنف</th><th>الكمية</th><th>حد التنبيه</th><th>الحالة</th><th class="np"></th></tr>
+ ${s.sup.filter(x=>!q||x.name.includes(q)).map(x=>h`<tr key=${x.id}><td><input value=${x.name} onInput=${e=>set(x.id,'name',e.target.value)}/> <small>${x.unit}</small></td>
+ <td><button class="btn s" onClick=${()=>set(x.id,'qty',Math.max(0,x.qty-1))}>−</button> <input type="number" style=${{width:64}} value=${x.qty} onInput=${e=>set(x.id,'qty',nm(e.target.value))}/> <button class="btn s" onClick=${()=>set(x.id,'qty',x.qty+1)}>+</button></td>
+ <td><input type="number" style=${{width:64}} value=${x.min} onInput=${e=>set(x.id,'min',nm(e.target.value))}/></td><td class=${x.qty<=x.min?'low':''}>${x.qty<=x.min?'⚠ نقص':'متوفر'}</td>
+ <td class="np"><button class="btn s d" onClick=${()=>ask('حذف الصنف «'+x.name+'»؟',()=>up(p=>({...p,sup:p.sup.filter(y=>y.id!==x.id)})))}>حذف</button></td></tr>`)}</table></div>`}
+
+function Rep({c}){const{s,date}=c;const days=[6,5,4,3,2,1,0].map(i=>addD(date,-i));const dt=s.tasks.filter(t=>t.date===date).sort((a,b)=>(a.start||'99').localeCompare(b.start||'99'));const f=s.food[date]||{};
+ return h`<div class="row np" style=${{marginBottom:10}}><button class="btn p" onClick=${()=>{try{window.print()}catch(e){c.say('الطباعة غير متاحة هنا')}}}>🖨 طباعة</button><button class="btn" onClick=${()=>c.setModal({k:'exp',n:'tasks-'+date+'.csv',x:csv(dt),ty:'text/csv'})}>CSV لليوم</button><button class="btn" onClick=${()=>c.setModal({k:'exp',n:'tasks-week-'+date+'.csv',x:csv(s.tasks.filter(t=>t.date>=days[0]&&t.date<=date)),ty:'text/csv'})}>CSV للأسبوع</button></div>
+ <div class="card tw"><h3>التقرير اليومي — ${date}</h3><p>الإنجاز الكلي: <b>${pct(dt)}%</b> (${dt.filter(t=>t.status==='مكتملة').length}/${dt.length}) · جولات الحمامات: <b>${bathPct(s,date)}%</b> · الفطار: ${f.out||'—'} ← ${f.back||'—'}${f.out&&f.back?' ('+(m(f.back)-m(f.out))+' دقيقة)':''}</p>
+ <table><tr><th>العامل</th><th>المهمة</th><th>الموقع</th><th>المخطط</th><th>الفعلي</th><th>الحالة</th><th>ملاحظات</th></tr>${dt.map(t=>h`<tr key=${t.id}><td>${t.worker}</td><td style=${{whiteSpace:'normal',minWidth:200}}>${t.title}</td><td>${t.loc}</td><td>${tl(t)}</td><td>${t.as||t.done?(t.as||'—')+'←'+(t.done||'—'):''}</td><td>${t.status}</td><td style=${{whiteSpace:'normal'}}>${[t.note,t.wn,ol(t).replace(' · ','')].filter(Boolean).join(' · ')}</td></tr>`)}</table>
+ <p><b>غير المكتملة:</b> ${dt.filter(t=>t.status!=='مكتملة').map(t=>t.worker+': '+t.title).join('، ')||'لا يوجد'}</p>
+ <p><b>نواقص مُبلَّغ عنها:</b> ${s.short.filter(x=>!x.done).map(x=>x.item+' ('+x.by+')').join('، ')||'لا يوجد'} · <b>نقص المخزون:</b> ${s.sup.filter(x=>x.qty<=x.min).map(x=>x.name+' ('+x.qty+')').join('، ')||'لا يوجد'}</p></div>
+ <div class="card tw"><h3>توقيع العمال واعتماد المشرف</h3><table><tr><th>العامل</th><th>التوقيع</th><th>الوقت</th><th>اعتماد المشرف</th></tr>${W.map(w=>{const g=s.signs[date+'|'+w]||{};return h`<tr key=${w}><td>${w}</td><td>${g.sig||'—'}</td><td>${g.at||''}</td><td>${g.appr?'✅ '+g.apprAt+' ('+(g.apprBy||'المشرف')+') ':''}${g.appr?h`<button class="btn s np" onClick=${()=>c.putSign(date,w,{appr:false,apprAt:''})}>إلغاء</button>`:h`<button class="btn s np" disabled=${!g.sig} onClick=${()=>c.putSign(date,w,{appr:true,apprAt:nowT(),apprBy:(s.admin||{}).name||'المشرف'})}>اعتماد</button>`}</td></tr>`})}</table></div>
+ <div class="card tw"><h3>التقرير الأسبوعي (٧ أيام حتى ${date})</h3><table><tr><th>اليوم</th>${W.map(w=>h`<th key=${w}>${w}</th>`)}<th>المهام</th><th>الحمامات</th></tr>
+ ${days.map(d=>{const a=s.tasks.filter(t=>t.date===d);return h`<tr key=${d}><td>${d}</td>${W.map(w=>{const b=a.filter(t=>t.worker===w);return h`<td key=${w}>${b.length?pct(b)+'%':'—'}</td>`})}<td>${a.length?pct(a)+'% ('+a.length+')':'—'}</td><td>${s.rounds.some(r=>r.date===d)?bathPct(s,d)+'%':'—'}</td></tr>`})}</table></div>`}
+function Data({c}){const{s,ask,setModal}=c;
+ return h`<div class="card"><h3>النسخ الاحتياطي والتصدير</h3><div class="row"><button class="btn p" onClick=${()=>setModal({k:'exp',n:'vndro-backup.json',x:JSON.stringify(s,null,1),ty:'application/json'})}>نسخة JSON</button>
+ <button class="btn" onClick=${()=>setModal({k:'imp'})}>استعادة من JSON</button><button class="btn" onClick=${()=>setModal({k:'exp',n:'tasks-all.csv',x:csv(s.tasks),ty:'text/csv'})}>CSV لكل المهام</button></div>
+ <p class="mu">تُحفظ البيانات في متصفحك (localStorage) والسجلات محفوظة حسب التاريخ. إن لم يبدأ التنزيل تلقائيًا فانسخ النص من النافذة.</p></div>
+ <${PinAdmin} c=${c}/>
+ <div class="card"><h3>المهام اليومية التلقائية</h3><button class="btn s" onClick=${()=>ask('استعادة القوالب الافتراضية (جدول رانيا وعلي وياسر)؟',()=>c.setTpl(null))}>استعادة الافتراضي</button><p class="mu">تُنشأ تلقائيًا كل يوم عند أول فتح للتطبيق. أوقاتها الأولية مقترحة ويمكن حذفها وإضافة بدائل.</p>${tplOf(s).map((x,i)=>h`<div class="row sb" key=${i}><span>${x.worker}: ${x.title} · ${x.start}${x.end?'–'+x.end:''}</span><button class="btn s d" onClick=${()=>ask('حذف القالب «'+x.title+'»؟ (لن يؤثر على مهام اليوم)',()=>c.setTpl(tplOf(s).filter((_,j)=>j!==i)))}>حذف</button></div>`)}</div>`}
+
+function Wk({c}){const{s,date}=c;const[me,setMe]=useState(()=>{if(c.mgr)return ls('vndro-me')||'';const u=ls('vndro-unl');return u&&u.date===date?u.w:''}),[sel,setSel]=useState(HT),[vw,setVw]=useState('d'),[pin,setPin]=useState(''),[er,setEr]=useState(''),[nm,setNm]=useState(''),[sh,setSh]=useState('');
+ const dv=vw==='d';
+ const pick=v=>{if(c.mgr){setMe(v);ls('vndro-me',v)}else{setSel(v);setPin('');setEr('')}};
+ const logout=()=>{ls('vndro-unl',null);setMe('');setSel('');setPin('')};
+ const unlock=async()=>{const p=s.pins[sel];if(!p)return setEr(c.rdy?'لم يحدد المشرف رقمك السري بعد':'جارٍ التحميل… حاول بعد لحظات');
+ const at=ls('vndro-att')||{},a=at[sel]||{n:0,t:0};if(a.t>Date.now())return setEr('محاولات خاطئة كثيرة. حاول بعد '+Math.ceil((a.t-Date.now())/60000)+' دقيقة');
+ if(await hashPin(pin.trim(),p.salt)===p.h){at[sel]={n:0,t:0};ls('vndro-att',at);ls('vndro-unl',{w:sel,date});setMe(sel);setPin('');setEr('')}
+ else{a.n++;if(a.n>=5){a.t=Date.now()+300000;a.n=0}at[sel]=a;ls('vndro-att',at);setEr(a.t>Date.now()?'تم إيقاف المحاولات 5 دقائق':'الرقم السري غير صحيح')}};
+ const l=s.tasks.filter(t=>t.date===date&&t.worker===me).sort((a,b)=>(a.start||'99').localeCompare(b.start||'99'));
+ const f=s.food[date]||{},sg=s.signs[date+'|'+me]||{},mb=s.bath.filter(b=>b.who===me),dn=l.filter(t=>t.status==='مكتملة').length;
+ return h`<div class="card"><h3>مهامي اليوم — ${date}</h3>${(c.mgr||!me)&&h`<div class="row">${W.filter(w=>c.mgr||!HT()||w===HT()).map(w=>h`<button key=${w} class=${'btn'+((c.mgr?me:sel)===w?' p':'')} onClick=${()=>pick(w)}>${w}</button>`)}</div>`}
+ ${!c.mgr&&!me&&sel&&h`<div class="row" style=${{marginTop:8}}><input type="password" inputMode="numeric" autoComplete="off" placeholder="الرقم السري" value=${pin} onInput=${e=>setPin(e.target.value)} onKeyDown=${e=>e.key==='Enter'&&unlock()}/><button class="btn p" onClick=${unlock}>دخول</button></div>${er&&h`<small style=${{color:'var(--er)'}}>${er}</small>`}`}
+ ${!c.mgr&&me&&h`<div class="row sb"><b>👤 ${me}</b><button class="btn s" onClick=${logout}>تسجيل الخروج</button></div>`}
+ ${me&&h`<p>${dn} من ${l.length} مهمة تمت</p><${Bar} v=${l.length?Math.round(dn*100/l.length):0} c="ok"/>`}${!me&&!sel&&h`<small>اختر اسمك ثم أدخل رقمك السري</small>`}</div>
+ ${me&&h`<div class="row np" style=${{marginBottom:8}}>${[['d','اليوم'],['w','الأسبوع'],['m','الشهر']].map(x=>h`<button key=${x[0]} class=${'btn'+(vw===x[0]?' p':'')} onClick=${()=>setVw(x[0])}>${x[1]}</button>`)}</div>`}
+ ${me&&!dv&&h`<${Period} c=${c} me=${me} vw=${vw}/>`}
+ ${me&&dv&&((s.avail[date+'|'+me]||{}).type||'ok')!=='ok'&&h`<div class="card"><b style=${{color:'var(--wn)'}}>اليوم: ${s.avail[date+'|'+me].type==='leave'?'إجازة':'أعمال إدارية أخرى'}</b> — مهامك المتعارضة حُوِّلت لزميلك.</div>`}
+ ${dv&&l.some(t=>t.food)&&h`<div class="card"><h3>الفطار</h3><p>خروج: <b>${f.out||'—'}</b> · عودة: <b>${f.back||'—'}</b></p>${f.out&&!f.back&&h`<p style=${{color:'var(--wn)'}}>أنت خارج الآن، سجّل عودتك عند الرجوع.</p>`}
+ <div class="row"><button class="btn p" onClick=${()=>c.setFood(date,{...f,out:nowT()})}>تسجيل الخروج الآن</button><button class="btn p" onClick=${()=>{if(!f.out)return c.say('سجّل الخروج أولًا');c.setFood(date,{...f,back:nowT()})}}>تسجيل العودة الآن</button></div></div>`}
+ ${me&&dv&&(l.length?l.map(t=>h`<div class="t" key=${t.id} style=${{borderInlineStartColor:'var(--'+SC[t.status]+')'}}><div class="row sb"><b>${t.title}</b><${Badge} s=${t.status}/></div>
+ <div class="mu">${t.orig?'↪ محوّلة من '+t.orig+' · ':''}${t.loc} · ${tl(t)}${t.note?' · '+t.note:''}${t.as||t.done?' · فعلي: '+(t.as||'—')+' ← '+(t.done||'—'):''}</div>
+ ${t.status==='مكتملة'?h`<div class="row" style=${{marginTop:6}}><b style=${{color:'var(--ok)'}}>✔ تم ${t.done||''}</b><button class="btn s" onClick=${()=>c.setStatus(t,'لم تبدأ')}>تراجع</button></div>`
+ :h`<div class="row" style=${{marginTop:8}}><button class="btn p" style=${{fontSize:18,padding:'10px 28px'}} onClick=${()=>c.setStatus(t,'مكتملة')}>تم ✔</button><button class="btn" onClick=${()=>c.setStatus(t,'جارٍ التنفيذ')}>بدأت</button><button class="btn" onClick=${()=>c.setStatus(t,'تحتاج إلى متابعة')}>تحتاج متابعة</button></div>`}
+ <input style=${{width:'100%',marginTop:6}} placeholder="ملاحظات التنفيذ" defaultValue=${t.wn||''} onBlur=${e=>{if(e.target.value!==(t.wn||''))c.putTask({...t,wn:e.target.value})}}/><${Thumbs} c=${c} t=${t}/><div style=${{marginTop:6}}><${PhotoBtn} c=${c} t=${t} by=${me}/></div></div>`):h`<div class="card"><small>لا مهام لك اليوم</small></div>`)}
+ ${me&&dv&&mb.length>0&&h`<div class="card"><h3>حماماتي</h3>${mb.map(b=>h`<div class="row sb" key=${b.id}><span>${b.name}${b.loc?' · '+b.loc:''} <small>(${rc(s,date,b.id).length} جولات)</small></span><button class="btn p s" onClick=${()=>c.setModal({k:'round',b})}>+ جولة</button></div>`)}</div>`}
+ ${me&&dv&&h`<div class="card"><h3>إبلاغ عن نقص مستلزم</h3><div class="row"><input placeholder="الصنف الناقص" value=${sh} onInput=${e=>setSh(e.target.value)}/><button class="btn s" onClick=${()=>{if(!sh.trim())return;c.putShort({id:uid(),date,time:nowT(),item:sh.trim(),by:me,done:false});setSh('');c.say('تم الإبلاغ')}}>إرسال</button></div></div>
+ <${Chk} c=${c} wk=${me}/>
+ <div class="card"><h3>توقيع نهاية اليوم</h3>${sg.sig?h`<b>✔ وقّع ${sg.sig} الساعة ${sg.at}</b>${sg.appr?h` · ✅ اعتمده ${sg.apprBy||'المشرف'} ${sg.apprAt}`:' · بانتظار اعتماد المشرف'}`:h`<div class="row"><input placeholder="اكتب اسمك للتوقيع" value=${nm} onInput=${e=>setNm(e.target.value)}/><button class="btn p" onClick=${()=>{if(!nm.trim())return c.say('اكتب اسمك');c.putSign(date,me,{sig:nm.trim(),at:nowT()});setNm('')}}>أوقّع</button></div>`}</div>`}`}
+function Short({c}){const{s,date}=c;const[it,setIt]=useState(''),[by,setBy]=useState(W[0]);const l=[...s.short].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+ return h`<div class="card np"><div class="row"><input placeholder="الصنف الناقص" value=${it} onInput=${e=>setIt(e.target.value)}/><select value=${by} onChange=${e=>setBy(e.target.value)}>${W.map(o=>h`<option>${o}</option>`)}</select>
+ <button class="btn p" onClick=${()=>{if(!it.trim())return;c.putShort({id:uid(),date,time:nowT(),item:it.trim(),by,done:false});setIt('')}}>+ تسجيل نقص</button></div></div>
+ <div class="card tw"><h3>سجل المستلزمات الناقصة</h3><table><tr><th>التاريخ</th><th>الوقت</th><th>الصنف</th><th>المُبلِّغ</th><th>الحالة</th><th class="np"></th></tr>${l.map(x=>h`<tr key=${x.id}><td>${x.date}</td><td>${x.time}</td><td>${x.item}</td><td>${x.by}</td><td class=${x.done?'':'low'}>${x.done?'تم التوفير':'ناقص'}</td>
+ <td class="np"><button class="btn s" onClick=${()=>c.putShort({...x,done:!x.done})}>${x.done?'إعادة فتح':'تم التوفير'}</button> <button class="btn s d" onClick=${()=>c.ask('حذف السجل؟',()=>c.delShort(x.id))}>حذف</button></td></tr>`)}</table>${!l.length&&h`<small>لا نواقص مسجلة.</small>`}</div>`}
+function Avail({c}){const{s,date}=c;const av=w=>s.avail[date+'|'+w]||{type:'ok'};const mv=s.tasks.filter(t=>t.date===date&&t.orig).sort((a,b)=>a.orig.localeCompare(b.orig));
+ return h`<div class="card"><h3>توفر العمال وإعادة توزيع المهام — ${date}</h3><p class="mu">عند تسجيل إجازة أو أعمال إدارية، تُحوَّل مهام العامل لزميله. إن كان لدى الزميل مهمة في نفس الوقت، تُسند له المهمة دون وقت محدد (يُحتفظ بوقتها الأصلي) لتُنفَّذ عند التفرغ ولا يحدث تداخل. عند عودة العامل تعود مهامه تلقائيًا.</p></div>
+ <div class="grid">${W.map(w=>{const a=av(w);return h`<div class="card" key=${w}><h3>${w}</h3>
+ <label class="mu">الحالة<br/><select value=${a.type||'ok'} onChange=${e=>c.putAvail(date,w,{type:e.target.value})}><option value="ok">متاح</option><option value="leave">إجازة (اليوم كله)</option><option value="admin">أعمال إدارية أخرى</option></select></label>
+ ${a.type==='admin'&&h`<div class="row" style=${{marginTop:8}}><label class="mu">من<br/><input type="time" value=${a.from||''} onChange=${e=>c.putAvail(date,w,{from:e.target.value})}/></label><label class="mu">إلى<br/><input type="time" value=${a.to||''} onChange=${e=>c.putAvail(date,w,{to:e.target.value})}/></label></div><small>اتركهما فارغين ليشمل اليوم كله</small>`}
+ ${a.type&&a.type!=='ok'&&h`<div style=${{marginTop:8}}><label class="mu">يستلم مهامه<br/><select value=${a.target||'auto'} onChange=${e=>c.putAvail(date,w,{target:e.target.value})}><option value="auto">تلقائي (الأقل انشغالًا)</option>${W.filter(x=>x!==w).map(x=>h`<option key=${x}>${x}</option>`)}</select></label></div>`}
+ <p><small>${s.tasks.filter(t=>t.date===date&&t.orig===w).length} مهمة محوّلة منه</small></p></div>`})}</div>
+ <div class="card tw"><div class="row sb"><h3>المهام المحوّلة اليوم</h3><button class="btn" onClick=${()=>c.redo(date)}>إعادة التوزيع الآن</button></div>
+ ${mv.length?h`<table><tr><th>المهمة</th><th>من</th><th>إلى</th><th>الوقت</th><th>الحالة</th></tr>${mv.map(t=>h`<tr key=${t.id}><td style=${{whiteSpace:'normal',minWidth:200}}>${t.title}</td><td>${t.orig}</td><td>${t.worker}</td><td>${t.start?tl(t):'عند التفرغ (الأصلي '+(t.ostart||'—')+')'}</td><td>${t.status}</td></tr>`)}</table>`:h`<small>لا مهام محوّلة.</small>`}</div>`}
+const AS=()=>window.claude?window.claude.use('assets'):Promise.resolve(null);
+const shrink=f=>new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);cv.toBlob(b=>b?res(b):rej(new Error('blob')),'image/jpeg',0.75)};im.onerror=()=>rej(new Error('img'));im.src=u});
+function PhotoBtn({c,t,by}){const[b,setB]=useState(false),[ok,setOk]=useState(null);
+ useEffect(()=>{AS().then(a=>setOk(!!a)).catch(()=>setOk(false))},[]);
+ if(ok===false)return h`<small class="mu">رفع الصور غير متاح لهذا الحساب (يلزم صلاحية Editor أو Contributor)</small>`;
+ return h`<label class="btn s np" style=${{cursor:'pointer'}}>${b?'جارٍ الرفع…':'📷 إضافة صورة'}<input type="file" accept="image/*" multiple style=${{display:'none'}} disabled=${b||ok===null} onChange=${async e=>{const fs=[...e.target.files];e.target.value='';if(!fs.length)return;setB(true);
+ try{const a=await AS();for(const f of fs){const r=await a.upload(await shrink(f));c.putPhoto({id:uid(),taskId:t.id,date:t.date,worker:by||t.worker,title:t.title,aid:r.id,at:nowT(),rv:'',rvNote:''})}c.say('تم رفع '+fs.length+' صورة')}catch(er){c.say('تعذر رفع الصورة'+(er&&er.code?' ('+er.code+')':''))}setB(false)}}/></label>`}
+function Thumbs({c,t}){const l=c.s.photos.filter(p=>p.taskId===t.id);if(!l.length)return null;
+ return h`<div style=${{marginTop:6}}><div class="row">${l.map(p=>h`<div key=${p.id} style=${{textAlign:'center'}}><img src=${'/_blob/'+p.aid} alt="صورة" onClick=${()=>c.setModal({k:'img',src:'/_blob/'+p.aid,cap:t.title+' · '+p.worker+' · '+p.at+(p.rv==='redo'?' · مطلوب إعادة: '+(p.rvNote||''):'')})} style=${{width:72,height:72,objectFit:'cover',borderRadius:8,border:'2px solid var(--'+(p.rv==='ok'?'ok':p.rv==='redo'?'wn':'bd')+')',cursor:'pointer',background:'var(--bd)'}}/><div style=${{fontSize:11}}>${p.rv==='ok'?'✔ معتمدة':p.rv==='redo'?'↺ إعادة':'⏳ للمراجعة'}</div></div>`)}</div>
+ ${l.filter(p=>p.rv==='redo').map(p=>h`<small key=${p.id} style=${{color:'var(--wn)',display:'block'}}>↺ مطلوب إعادة التصوير: ${p.rvNote}</small>`)}</div>`}
+function Photos({c}){const{s,date}=c;const[fw,setFw]=useState(''),[fr,setFr]=useState(''),[all,setAll]=useState(false),[nt,setNt]=useState({});
+ const l=s.photos.filter(p=>(all||p.date===date)&&(!fw||p.worker===fw)&&(!fr||(fr==='new'?!p.rv:p.rv===fr))).sort((a,b)=>(b.date+b.at).localeCompare(a.date+a.at));
+ return h`<div class="card np"><div class="row"><select value=${fw} onChange=${e=>setFw(e.target.value)}><option value="">كل العمال</option>${W.map(o=>h`<option>${o}</option>`)}</select>
+ <select value=${fr} onChange=${e=>setFr(e.target.value)}><option value="">كل الحالات</option><option value="new">بانتظار المراجعة</option><option value="ok">معتمدة</option><option value="redo">مطلوب إعادة</option></select>
+ <label class="row"><input type="checkbox" checked=${all} onChange=${e=>setAll(e.target.checked)}/> كل الأيام</label><small>${l.length} صورة</small></div></div>
+ <div class="grid">${l.map(p=>{const t=s.tasks.find(x=>x.id===p.taskId),src='/_blob/'+p.aid;
+ return h`<div class="card" key=${p.id}><img src=${src} alt="صورة" onClick=${()=>c.setModal({k:'img',src,cap:p.title+' · '+p.worker+' · '+p.date+' '+p.at})} style=${{width:'100%',height:190,objectFit:'cover',borderRadius:8,cursor:'pointer',background:'var(--bd)'}}/>
+ <div style=${{marginTop:6}}><b>${p.title}</b></div><small>${p.worker} · ${p.date} ${p.at}${t?' · '+t.status:''}</small>
+ <div>${p.rv==='ok'?h`<b style=${{color:'var(--ok)'}}>✔ معتمدة ${p.rvAt||''}</b>`:p.rv==='redo'?h`<b style=${{color:'var(--wn)'}}>↺ مطلوب إعادة: ${p.rvNote}</b>`:h`<span class="mu">⏳ بانتظار المراجعة</span>`}</div>
+ <div class="row np" style=${{marginTop:8}}><button class="btn p s" onClick=${()=>c.putPhoto({...p,rv:'ok',rvNote:'',rvAt:nowT()})}>✔ اعتماد</button>
+ <input style=${{width:130}} placeholder="سبب الإعادة" value=${nt[p.id]||''} onInput=${e=>setNt({...nt,[p.id]:e.target.value})}/>
+ <button class="btn s" onClick=${()=>{const r=(nt[p.id]||'').trim();if(!r)return c.say('اكتب سبب الإعادة');c.putPhoto({...p,rv:'redo',rvNote:r,rvAt:nowT()});if(t)c.putTask({...t,status:'تحتاج إلى متابعة',note:'مطلوب إعادة صورة: '+r});setNt({...nt,[p.id]:''})}}>↺ طلب إعادة</button>
+ <button class="btn s d" onClick=${()=>c.ask('حذف الصورة نهائيًا؟',()=>c.delPhoto(p))}>حذف</button></div></div>`})}</div>
+ ${!l.length&&h`<div class="card"><small>لا صور بهذه المعايير.</small></div>`}`}
+function RecForm({c,r}){const[f,setF]=useState(r),[e,setE]=useState('');const set=(k,v)=>setF({...f,[k]:v});
+ return h`<h3>${r.id?'تعديل':'إضافة'} مهمة دورية أو إضافية</h3><div class="f">
+ <label class="w">العنوان<input value=${f.title} onInput=${x=>set('title',x.target.value)}/></label>
+ <label>العامل<select value=${f.worker} onChange=${x=>set('worker',x.target.value)}>${W.map(o=>h`<option>${o}</option>`)}</select></label>
+ <label>الموقع<select value=${f.loc} onChange=${x=>set('loc',x.target.value)}>${LOC.map(o=>h`<option>${o}</option>`)}</select></label>
+ <label>التكرار<select value=${f.freq} onChange=${x=>set('freq',x.target.value)}><option value="once">مرة واحدة (التاريخ المحدد)</option><option value="daily">يوميًا</option><option value="weekly">أسبوعيًا</option><option value="monthly">شهريًا</option></select></label>
+ ${f.freq==='once'&&h`<label>التاريخ<input type="date" value=${f.date||c.date} onInput=${x=>set('date',x.target.value)}/></label>`}
+ ${f.freq==='weekly'&&h`<label>اليوم<select value=${f.dow} onChange=${x=>set('dow',+x.target.value)}>${DAYS.map((d,i)=>h`<option key=${i} value=${i}>${d}</option>`)}</select></label>`}
+ ${f.freq==='monthly'&&h`<label>يوم الشهر<input type="number" min="1" max="28" value=${f.dom} onInput=${x=>set('dom',Math.min(28,Math.max(1,+x.target.value||1)))}/></label>`}
+ <label>من (اختياري)<input type="time" value=${f.start||''} onInput=${x=>set('start',x.target.value)}/></label>
+ <label>إلى (اختياري)<input type="time" value=${f.end||''} onInput=${x=>set('end',x.target.value)}/></label></div>
+ <p class="mu">بدون وقت: تظهر «عند التفرغ» ولا تتعارض مع جدول العامل. مع وقت: يُفحص التعارض قبل الحفظ.</p>
+ ${e&&h`<p style=${{color:'var(--er)'}}>${e}</p>`}
+ <div class="row"><button class="btn p" onClick=${()=>{const x=c.saveRec(f);if(x)setE(x);else{c.setModal(null);c.say('تم الحفظ')}}}>حفظ</button><button class="btn" onClick=${()=>c.setModal(null)}>إلغاء</button></div>`}
+function Rec({c}){const{s,setModal,ask}=c;const rec=s.rec||[];const nw=x=>({title:'',worker:W[0],loc:LOC[0],freq:'weekly',dow:4,dom:1,start:'',end:'',...x});
+ return h`<div class="card"><h3>المهام الدورية والإضافية</h3><p class="mu">كنس، زجاج، تكييفات وغيرها. تُنشأ تلقائيًا في أيامها ضمن مهام العامل، ويمكن إضافة أي مهمة لمرة واحدة.</p>
+ <button class="btn p np" onClick=${()=>setModal({k:'rec',r:nw({})})}>+ مهمة جديدة</button></div>
+ <div class="card tw"><h3>القواعد الحالية</h3>${rec.length?h`<table><tr><th>المهمة</th><th>العامل</th><th>الموقع</th><th>التكرار</th><th>الوقت</th><th class="np"></th></tr>
+ ${rec.map(r=>h`<tr key=${r.id} style=${{opacity:r.on===false?.5:1}}><td style=${{whiteSpace:'normal',minWidth:200}}>${r.title}</td><td>${r.worker}</td><td>${r.loc}</td><td>${frT(r)}</td><td>${r.start?r.start+(r.end?'–'+r.end:''):'عند التفرغ'}</td>
+ <td class="np"><button class="btn s" onClick=${()=>c.setRec(rec.map(x=>x.id===r.id?{...x,on:x.on===false}:x))}>${r.on===false?'تفعيل':'إيقاف'}</button> <button class="btn s" onClick=${()=>setModal({k:'rec',r})}>تعديل</button> <button class="btn s d" onClick=${()=>ask('حذف القاعدة «'+r.title+'»؟ (لا يؤثر على المهام المُنشأة)',()=>c.setRec(rec.filter(x=>x.id!==r.id)))}>حذف</button></td></tr>`)}</table>`:h`<small>لا قواعد بعد. اختر من المقترحات أو أضف مهمة جديدة.</small>`}</div>
+ <div class="card"><h3>مقترحات جاهزة</h3><p class="mu">اضغط للمراجعة قبل الإضافة (العامل والتكرار قابلان للتعديل).</p>
+ ${SUG.map((x,i)=>h`<div class="row sb" key=${i} style=${{borderTop:'1px solid var(--bd)',padding:'6px 0'}}><span>${x.title} <small>· ${x.loc} · ${frT({dom:1,dow:0,...x})}</small></span><button class="btn s np" onClick=${()=>setModal({k:'rec',r:nw(x)})}>اختيار</button></div>`)}</div>`}
+function App(){const[s,setS]=useState(load),[ed,setEd]=useState(null),[adm,setAdm]=useState(()=>{const u=ls('vndro-adm');return !!(u&&u.date===today())}),[live,setLive]=useState(false),[rdy,setRdy]=useState(false),[date,setDate]=useState(today()),[tab,setTab]=useState('dash'),[modal,setModal]=useState(null),[cf,setCf]=useState(null),[ts,setTs]=useState(''),[imp,setImp]=useState('');
+ useEffect(()=>{try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}},[s]);
+ const sr=useRef(s);sr.current=s;
+ useEffect(()=>{let un=()=>{};(async()=>{try{const cl=window.claude;if(!cl){setEd(true);setRdy(true);return}
+ const u=await cl.use('user');const own=u?await u.isOwner():true;setEd(own);
+ const db=await cl.use('db');if(!db){setRdy(true);return}DB=db;setLive(true);let first=true;
+ const u1=db.collection('tasks').onSnapshot(sn=>{if(first&&own&&sn.empty&&sr.current.tasks.length)sr.current.tasks.forEach(t=>db.doc('tasks/'+t.id).set(t).catch(()=>{}));else setS(p=>({...p,tasks:sn.docs.map(d=>({...d.data(),id:d.id}))}));first=false;setRdy(true)},()=>{setLive(false);setRdy(true)});const u2=db.collection('signs').onSnapshot(sn=>setS(p=>({...p,signs:Object.fromEntries(sn.docs.map(d=>[d.data().date+'|'+d.data().worker,d.data()]))})));
+ const u3=db.collection('food').onSnapshot(sn=>setS(p=>({...p,food:Object.fromEntries(sn.docs.map(d=>[d.id,d.data()]))})));
+ const u4=db.collection('rounds').onSnapshot(sn=>setS(p=>({...p,rounds:sn.docs.map(d=>({...d.data(),id:d.id}))})));
+ const u5=db.collection('short').onSnapshot(sn=>setS(p=>({...p,short:sn.docs.map(d=>({...d.data(),id:d.id}))})));
+ const u6=db.collection('checks').onSnapshot(sn=>setS(p=>({...p,checks:Object.fromEntries(sn.docs.flatMap(d=>{const x=d.data();return Object.keys(x.map||{}).map(i=>[x.date+'|'+i,true])}))})));
+ const u7=db.doc('lists/all').onSnapshot(sn=>{if(sn.exists&&sn.data().lists)setS(p=>({...p,lists:sn.data().lists}))});
+ const u8=db.collection('avail').onSnapshot(sn=>setS(p=>({...p,avail:Object.fromEntries(sn.docs.map(d=>[d.data().date+'|'+d.data().worker,d.data()]))})));const u12=db.doc('cfg/admin').onSnapshot(sn=>{if(sn.exists&&sn.data().admin)setS(p=>({...p,admin:sn.data().admin}))});const u11=db.doc('cfg/pins').onSnapshot(sn=>{if(sn.exists&&sn.data().pins)setS(p=>({...p,pins:sn.data().pins}))});const u10=db.doc('cfg/rec').onSnapshot(sn=>{if(sn.exists&&sn.data().list)setS(p=>({...p,rec:sn.data().list}))});const u9=db.collection('photos').onSnapshot(sn=>setS(p=>({...p,photos:sn.docs.map(d=>({...d.data(),id:d.id}))})));un=()=>{u1();u2();u3();u4();u5();u6();u7();u8();u9();u10();u11();u12()}}catch(e){setEd(x=>x===null?true:x);setRdy(true)}})();return()=>un()},[]);
+ const say=x=>{setTs(x);setTimeout(()=>setTs(''),2800)};
+ const putTask=t=>{setS(p=>({...p,tasks:p.tasks.some(x=>x.id===t.id)?p.tasks.map(x=>x.id===t.id?t:x):[...p.tasks,t]}));if(DB)DB.doc('tasks/'+t.id).set(t).catch(()=>say('تعذر الحفظ المشترك'))};
+ const delTask=id=>{setS(p=>({...p,tasks:p.tasks.filter(x=>x.id!==id)}));if(DB)DB.doc('tasks/'+id).delete().catch(()=>say('تعذر الحذف المشترك'))};
+ const setStatus=(t,st)=>putTask({...t,status:st,as:st==='لم تبدأ'?'':(t.as||(st==='جارٍ التنفيذ'||st==='مكتملة'?nowT():'')),done:st==='مكتملة'?nowT():''});
+ const wr=(col,o,id)=>{if(DB)DB.doc(col+'/'+id).set(o).catch(()=>say('تعذر الحفظ المشترك'))};
+ const putRound=r=>{setS(p=>({...p,rounds:[...p.rounds,r]}));wr('rounds',r,r.id)};
+ const delRound=id=>{setS(p=>({...p,rounds:p.rounds.filter(x=>x.id!==id)}));if(DB)DB.doc('rounds/'+id).delete().catch(()=>{})};
+ const putShort=x=>{setS(p=>({...p,short:p.short.some(y=>y.id===x.id)?p.short.map(y=>y.id===x.id?x:y):[...p.short,x]}));wr('short',x,x.id)};
+ const delShort=id=>{setS(p=>({...p,short:p.short.filter(x=>x.id!==id)}));if(DB)DB.doc('short/'+id).delete().catch(()=>{})};
+ const putSign=(d,w,o)=>{const k=d+'|'+w,n={...(sr.current.signs||{})[k],...o,date:d,worker:w};setS(p=>({...p,signs:{...p.signs,[k]:n}}));wr('signs',n,d+'-'+W.indexOf(w))};
+ const setLists=l=>{setS(p=>({...p,lists:l}));wr('lists',{lists:l},'all')};
+ const setCheck=(d,w,id,v)=>{setS(p=>({...p,checks:{...p.checks,[d+'|'+id]:v}}));const map={};(sr.current.lists[w]||[]).forEach(i=>{if(i.id===id?v:sr.current.checks[d+'|'+i.id])map[i.id]=true});wr('checks',{date:d,wi:W.indexOf(w),map},d+'-'+W.indexOf(w))};
+ const resched=(d,f)=>{const tm=x=>String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');
+ sr.current.tasks.filter(t=>t.date===d&&t.food).forEach(t=>putTask({...t,as:f.out||'',end:f.back||'',done:f.back||'',status:f.back?'مكتملة':(f.out?'جارٍ التنفيذ':'لم تبدأ')}));
+ let c0=f.back?m(f.back):null;
+ sr.current.tasks.filter(t=>t.date===d&&t.rel).sort((a,b)=>a.ord-b.ord).forEach(t=>{
+ if(t.status==='مكتملة'){if(t.end&&c0!=null)c0=Math.max(c0,m(t.end));return}
+ const dur=t.dur||30;let a=null,b=null;
+ if(c0!=null){let x=c0;for(let i=0;i<14;i++){const y=t.cap?t.cap:x+dur;if(x>=(t.cap||990)||y>(t.cap||990))break;const o=conflict({tasks:sr.current.tasks,food:sr.current.food||{}},{...t,start:tm(x),end:tm(y)});if(!o){a=x;b=y;break}x=Math.max(x+1,m(o.end)||m(o.start)+1)}}
+ const fit=a!=null;let st=t.status,nt=t.note||'';
+ if(c0!=null&&!fit){st='تحتاج إلى متابعة';nt='تعذر إيجاد وقت خالٍ قبل 16:30 بعد العودة — يحتاج قرار المشرف'}
+ else if(fit&&nt.startsWith('تعذر')){st='لم تبدأ';nt=''}
+ putTask({...t,start:fit?tm(a):'',end:fit?tm(b):'',status:st,note:nt});if(fit)c0=b})};
+ const setFood=(d,n)=>{setS(p=>({...p,food:{...p.food,[d]:n}}));wr('food',n,d);resched(d,n)};
+ const putMany=(d,g,ex)=>{const av=sr.current.avail||{},all=[...sr.current.tasks.filter(t=>t.date===d&&!g.some(x=>x.id===t.id)&&!(ex&&ex.has(t.id))),...g],ch=new Map(plan(all,av,sr.current.food||{}).map(t=>[t.id,t]));g.forEach(t=>putTask(ch.get(t.id)||t));ch.forEach((t,id)=>{if(!g.some(x=>x.id===id))putTask(t)})};
+ const redo=(d,av)=>{const ch=plan(sr.current.tasks.filter(t=>t.date===d),av||sr.current.avail||{},sr.current.food||{});ch.forEach(putTask);say(ch.length?'تم تحديث توزيع '+ch.length+' مهمة':'لا تغييرات في التوزيع')};
+ const putAvail=(d,w,o)=>{const k=d+'|'+w,n={...(sr.current.avail||{})[k],...o,date:d,worker:w};setS(p=>({...p,avail:{...p.avail,[k]:n}}));wr('avail',n,d+'-'+W.indexOf(w));redo(d,{...(sr.current.avail||{}),[k]:n})};
+ const putPhoto=x=>{setS(p=>({...p,photos:p.photos.some(y=>y.id===x.id)?p.photos.map(y=>y.id===x.id?x:y):[...p.photos,x]}));wr('photos',x,x.id)};
+ const delPhoto=async x=>{setS(p=>({...p,photos:p.photos.filter(y=>y.id!==x.id)}));if(DB)DB.doc('photos/'+x.id).delete().catch(()=>{});try{const a=await AS();if(a&&x.aid)await a.delete(x.aid)}catch(e){}};
+ const setRec=n=>{setS(p=>({...p,rec:n}));wr('cfg',{list:n},'rec')};
+ const saveRec=f=>{if(!f.title.trim())return'أدخل عنوان المهمة';const a=m(f.start),b=m(f.end);
+ if(f.start&&(a<480||a>1020||(b!=null&&(b>1020||b<a))))return'الوقت يجب أن يكون بين 08:00 و17:00 ووقت الانتهاء بعد البدء';
+ if(f.start){const o=f.freq==='once'?conflict(sr.current,{id:'n',date:f.date||date,worker:f.worker,start:f.start,end:f.end}):conflict({tasks:tplOf(sr.current).filter(x=>x.start).map(x=>({...x,id:x.title,date:'X'})),food:{}},{id:'n',date:'X',worker:f.worker,start:f.start,end:f.end});if(o)return'تعارض زمني مع «'+o.title+'» ('+o.start+(o.end?'–'+o.end:'')+') لدى '+f.worker}
+ if(f.freq==='once'){putMany(f.date||date,[{id:uid(),date:f.date||date,freq:'once',worker:f.worker,title:f.title.trim(),loc:f.loc,start:f.start||'',end:f.end||'',food:false,rel:false,rec:true,ord:0,dur:0,cap:0,status:ST[0],note:'',done:'',as:''}]);return null}
+ const r={...f,title:f.title.trim(),id:f.id||uid()},l=sr.current.rec||[];setRec(l.some(x=>x.id===r.id)?l.map(x=>x.id===r.id?r:x):[...l,r]);
+ putMany(date,mkTasks(date,recFor([r],date),sr.current.tasks));return null};
+ const setAdmin=n=>{setS(p=>({...p,admin:n}));wr('cfg',{admin:n},'admin')};
+ const setPins=n=>{setS(p=>({...p,pins:n}));wr('cfg',{pins:n},'pins')};
+ const regen=()=>setCf({msg:'سيتم حذف مهام '+date+' وإعادة إنشائها من القوالب، وتُفقد الحالات المسجلة لهذا اليوم. متابعة؟',fn:()=>{const nt=mkTasks(date,[...tplOf(sr.current),...recFor(sr.current.rec||[],date)],[]),ids=new Set(nt.map(x=>x.id));sr.current.tasks.filter(t=>t.date===date&&!ids.has(t.id)).forEach(t=>delTask(t.id));putMany(date,nt,new Set(sr.current.tasks.filter(t=>t.date===date&&!ids.has(t.id)).map(t=>t.id)));setTimeout(()=>{const f=sr.current.food[date];if(f&&f.back)resched(date,f)},500);say('تم بناء جدول اليوم')}});
+ const setTpl=n=>{setS(p=>({...p,tpl:n}));if(DB)DB.doc('cfg/tpl').set({list:n}).catch(()=>say('تعذر حفظ القالب'))};
+ const addTpl=f=>setTpl([...tplOf(sr.current),{worker:f.worker,title:f.title,loc:f.loc,start:f.start,end:f.end,food:false}]);
+ useEffect(()=>{if(!rdy)return;const d=today();(async()=>{try{if(DB){const mkr=DB.doc('days/'+d);const sn=await mkr.get();if(sn.exists)return;const tp=await DB.doc('cfg/tpl').get();const list=(tp.exists&&tp.data().list)||tplOf(sr.current);const rcd=await DB.doc('cfg/rec').get();const rl=rcd.exists&&rcd.data().list?rcd.data().list:(sr.current.rec||[]);putMany(d,mkTasks(d,[...list,...recFor(rl,d)],sr.current.tasks));await mkr.set({gen:1})}else if(!(sr.current.gen||{})[d]){putMany(d,mkTasks(d,[...tplOf(sr.current),...recFor(sr.current.rec||[],d)],sr.current.tasks));setS(p=>({...p,gen:{...p.gen,[d]:1}}))}}catch(e){}})()},[rdy]);
+ const saveTask=t=>{const a=m(t.start),b=m(t.end);if(!t.title.trim())return'أدخل عنوان المهمة';if(a==null&&!t.rel)return'أدخل وقت البدء';
+ if(a!=null&&(a<480||a>1020||(b!=null&&(b>1020||b<a))))return'الوقت يجب أن يكون بين 08:00 و17:00 ووقت الانتهاء بعد البدء';
+ const o=conflict(s,t);if(o)return'تعارض زمني مع «'+o.title+'» ('+o.start+(o.end?'–'+o.end:'')+') لدى '+t.worker;
+ putTask({...t,freq:t.freq||(sr.current.tasks.some(x=>x.id===t.id)?'daily':'once')});return null};
+ const gen=()=>{putMany(date,mkTasks(date,[...tplOf(s),...recFor(s.rec||[],date)],s.tasks));say('تمت إضافة المهام الافتراضية (قابلة للتعديل)')};
+ const c={s,up:setS,putTask,delTask,setStatus,addTpl,setTpl,setFood,putAvail,redo,setTab,putPhoto,delPhoto,saveRec,setRec,setPins,setAdmin,mgr:ed===true||adm,putSign,putRound,delRound,putShort,delShort,setCheck,setLists,regen,date,ask:(msg,fn)=>setCf({msg,fn}),say,setModal,saveTask,gen};
+ const T=[['dash','لوحة التحكم',Dash],['tasks','المهام بالساعة',Tasks],['avail','التوفر والتوزيع',Avail],['chk','قوائم الفحص',Chk],['bath','الحمامات',Bath],['fac','البوفية والمخزن والفطار',Fac],['sup','المستلزمات',Sup],['short','سجل النواقص',Short],['photos','مراجعة الصور',Photos],['rec','المهام الدورية',Rec],['rep','التقارير',Rep],['data','البيانات',Data],['wk','شاشة العامل',Wk]];
+ const Cur=T.find(x=>x[0]===tab)[2];
+ const rm=modal&&modal.k==='round'&&h`<${Modal} close=${()=>setModal(null)}><${RoundForm} c=${c} b=${modal.b}/><//>`;
+ const rcm=modal&&modal.k==='rec'&&h`<${Modal} close=${()=>setModal(null)}><${RecForm} c=${c} r=${modal.r}/><//>`;
+ const im=modal&&modal.k==='img'&&h`<${Modal} close=${()=>setModal(null)}><img src=${modal.src} alt="صورة" style=${{maxWidth:'100%',borderRadius:8}}/><p>${modal.cap}</p><button class="btn" onClick=${()=>setModal(null)}>إغلاق</button><//>`;
+ if(ed===null)return h`<main><p>جارٍ التحميل…</p></main>`;
+ if(ed===false&&!adm)return h`<header><div class="bar1"><h1>Vndro · مهامي</h1><small>${live?'🟢 متصل':'⚠ غير متصل بالبيانات المشتركة'}</small></div></header><main><${Wk} c=${{...c,date:today(),rdy}}/><${AdminGate} c=${{...c,rdy}} onOk=${()=>{ls('vndro-adm',{date:today()});setAdm(true)}}/></main>${rm}${im}${rcm}${ts&&h`<div class="toast">${ts}</div>`}`;
+ return h`<header><div class="bar1"><h1>Vndro Facilities Manager<small>Vndro.com LLC · ٨ص – ٥م${live?' · 🟢 مشترك':''} · المشرف: ${(s.admin||{}).name||''}</small></h1>
+ <div class="row np">${adm&&ed!==true&&h`<button class="btn s" onClick=${()=>{ls('vndro-adm',null);setAdm(false)}}>خروج المشرف</button>`}<button class="btn p s" onClick=${()=>setModal({k:'rec',r:{title:'',worker:W[0],loc:LOC[0],freq:'once',dow:4,dom:1,start:'',end:''}})}>+ إضافة مهمة</button><button class="btn s" onClick=${()=>setDate(addD(date,-1))}>▶</button><input type="date" value=${date} onInput=${e=>e.target.value&&setDate(e.target.value)}/><button class="btn s" onClick=${()=>setDate(addD(date,1))}>◀</button><button class="btn s" onClick=${()=>setDate(today())}>اليوم</button></div></div></header>
+ <div class="tabs">${T.map(x=>h`<button key=${x[0]} class=${'tab'+(tab===x[0]?' on':'')} onClick=${()=>setTab(x[0])}>${x[1]}</button>`)}</div>
+ <main><${Cur} c=${c}/></main>
+ ${rm}${im}${rcm}${modal&&modal.k==='task'&&h`<${Modal} close=${()=>setModal(null)}><${TaskForm} c=${c} t=${modal.t}/><//>`}
+ ${modal&&modal.k==='exp'&&h`<${Modal} close=${()=>setModal(null)}><h3>${modal.n}</h3><textarea id="exp" readOnly value=${modal.x}></textarea><div class="row" style=${{marginTop:8}}>
+ <button class="btn p" onClick=${()=>{const t=document.getElementById('exp');t.select();try{navigator.clipboard.writeText(modal.x).catch(()=>document.execCommand('copy'))}catch(e){try{document.execCommand('copy')}catch(_){}}say('تم النسخ')}}>نسخ</button>
+ <button class="btn" onClick=${()=>dl(modal.n,modal.x,modal.ty)}>تنزيل</button><button class="btn" onClick=${()=>setModal(null)}>إغلاق</button></div><//>`}
+ ${modal&&modal.k==='imp'&&h`<${Modal} close=${()=>setModal(null)}><h3>استعادة نسخة JSON</h3><textarea placeholder="الصق محتوى النسخة هنا" value=${imp} onInput=${e=>setImp(e.target.value)}></textarea><input type="file" accept=".json" onChange=${e=>{const r=new FileReader();r.onload=()=>setImp(String(r.result));e.target.files[0]&&r.readAsText(e.target.files[0])}}/>
+ <div class="row" style=${{marginTop:8}}><button class="btn p" onClick=${()=>{try{const j=JSON.parse(imp);if(!j.tasks||!j.bath)throw 0;setModal(null);setCf({msg:'سيتم استبدال كل البيانات الحالية بالنسخة. متابعة؟',fn:()=>{setS({...mk(),...j});say('تمت الاستعادة')}})}catch(e){say('ملف غير صالح')}}}>استعادة</button><button class="btn" onClick=${()=>setModal(null)}>إلغاء</button></div><//>`}
+ ${cf&&h`<${Modal} close=${()=>setCf(null)}><h3>تأكيد</h3><p>${cf.msg}</p><div class="row"><button class="btn d" onClick=${()=>{cf.fn();setCf(null)}}>نعم، تأكيد</button><button class="btn" onClick=${()=>setCf(null)}>إلغاء</button></div><//>`}
+ ${ts&&h`<div class="toast">${ts}</div>`}`}
+ReactDOM.createRoot(document.getElementById('root')).render(h`<${App}/>`);
+</script></body></html>
